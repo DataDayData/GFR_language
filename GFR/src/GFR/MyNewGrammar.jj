@@ -1,0 +1,289 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */options{  static = true;}PARSER_BEGIN(MyNewGrammar)package GFR;
+
+public class MyNewGrammar{  public static void main(String args []) throws ParseException  {	MyNewGrammar parser = new MyNewGrammar(System.in);
+		System.out.println("***** Welcome to Our programming language*****");
+		while (true){
+		System.out.println("\nEnter your input: ");
+		try
+		{
+		MyNewGrammar.start();
+		System.out.println("\nSyntactically correct statement");
+		}
+		catch (Exception e)
+		{
+		System.out.println("Syntactically NOT correct statement");
+		System.out.println(e.getMessage());
+		break;
+		}
+		}
+		}
+		}
+		
+PARSER_END(MyNewGrammar)
+SKIP :
+{
+" "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN : /* Arithmetic Operation */
+{
+< PLUS : "plus+" >
+| < MINUS : "minus-" >
+| < MULTIPLY : "multi" >
+| < DIVIDE : "/" >
+| < REMINDER : "%" >
+| < ASSIGN : "is_assigned" >
+| < INCREMENT : "incre++" >
+| < DECREMENT : "decre--" >
+}
+//fixed renadInt $7yut is_assigned 9
+//if (3lt9) Go-To print(8)
+TOKEN : /* Relational operation */
+{
+< ISEQUAL : "eq" >
+| < NOTEQUAL : "ne" >
+| < GREATERTHAN : "gt" >
+| < LESSTHAN : "lt" >
+| < GREATEROREQUAL : "gte" >
+| < LESSOREQUAL : "lte" >
+}
+
+
+TOKEN : /* Logical operation */
+{
+< AND : "and" >
+| < OR : "or" >
+| < NEGATE : "negate" >
+}
+
+
+TOKEN : /* Keywords */
+{
+< IFOP : "if" >
+| < OTHERSTMT : "Others" >
+| < INTEGERKEY : "renadInt" >
+| < FRACTIONKEY : "boboFraction" >
+| < LETTERSKEY : "ghaidaLetters" >
+| < CONSTANTKEY : "fixed" >
+| < STATICKEY : "static" >
+| < array : "shelf" >
+| < LIST : "Directory"> 
+| < WhileOp : "while" >
+| < PRINT : "print" >
+}
+
+
+TOKEN : /* Digits */
+{
+< #DIGITS : ["0"-"9"] >
+| < FRACTIONS : (< DIGITS >)* (".") (< DIGITS >)+ > // Definition of fractions
+| < INTEGER : (< DIGITS >)+ >
+}
+
+
+TOKEN : /* IDENTIFIERs */
+{
+
+< IDENTIFIER : (<DollarSign>) (< DIGITS >) (<LETTERS> | <DIGITS>)+ >
+//Identifier must start with "$" then digit followed by any combination of letters and digits.
+
+| < LETTERS : (["A"-"Z" , "a"-"z"])+ >
+}
+
+
+TOKEN : /* Punctuation */
+{
+< DOT: ".">
+| < F_parentheses: "("> //left brackets
+| < L_parentheses: ")"> //right brackets
+| < F_brac: "["> //left brackets
+| < L_brac: "]"> //right brackets
+| < GoTostmt: "Go-To">
+| < COMMA: ",">
+| < Double_Qutation: "\"" >
+| < HASH: "#">
+| < DollarSign: "$">
+| < OTHERPUNCUATION: ( "!"| "*" | "/" | "-" | "+" | "=" | "|"
+ | "[" | "]" | "%" | "_"| "&" | "~" | "@"|"^") >
+}
+
+void start(): { }
+{
+STMTS() < DOT > | Comment()
+
+}
+
+void STMTS(): { }
+{
+array()
+| IFSTMT()
+| WhileSTMT()
+| CONST()
+| STAT()
+| ASSIGNMENT()
+| UNARYSTMT()
+| PRINTSTMT()
+| List ()
+
+}
+
+void Comment(): { } {
+"c*" (Digit() | < LETTERS> | PuncMarks())+ "*c"
+
+{
+System.out.println("There is a Comment");
+}
+}
+
+
+void ASSIGNMENT(): { }
+{
+(< IDENTIFIER >) (<ASSIGN>) STMT()
+
+{
+System.out.println("There is an Assignment Statement");
+}
+}
+
+void STMT(): { } 
+{
+((< IDENTIFIER >) | Digit() | < LETTERS>) (ArithmeticSTMT() |
+LogicalSTMT() | RelationalSTMT())?
+
+}
+
+void array(): { } 
+
+{
+(<array>) (<IDENTIFIER>) (<ASSIGN>)
+(<F_parentheses>) (Digit() | < LETTERS>)+ ((<COMMA>) (Digit() | <LETTERS> ))* (<L_parentheses>)
+
+{
+System.out.println("There is a data structure: array");
+}
+}
+
+void  List () : { } 
+{ 
+ (< LIST >) (< IDENTIFIER>)  (< ASSIGN>) (<F_brac>)(<F_brac >) 
+ (< LETTERS> |< INTEGER > | < OTHERPUNCUATION >)+
+}
+
+
+
+void IFSTMT():{ System.out.println("There is IF Statement");} 
+{
+ <IFOP> <F_parentheses> Condition() <L_parentheses>  <GoTostmt> (LOOKAHEAD(1) STMTS() )+  (LOOKAHEAD(1)< OTHERSTMT> (LOOKAHEAD(1)STMTS())+)?
+//if (3lt9) Go-To print(8)
+
+}
+
+void WhileSTMT(): { System.out.println("There is WhileSTMT Statement");}
+{
+< WhileOp> <F_parentheses> Condition() <L_parentheses> <GoTostmt> (LOOKAHEAD(2)STMTS())+ 
+
+}
+
+void Condition(): { }
+{
+(< IDENTIFIER > | Digit()) (RelationalOp() | LogicalOp()) ( <IDENTIFIER > | Digit() )
+
+}
+
+
+void CONST(): {System.out.println("There is constant Statement"); }
+{
+< CONSTANTKEY> (IntegerDeclare() | FractionDeclare() | LettersDeclare())
+
+}
+
+
+void STAT(): {System.out.println("There is static Statement"); }
+{
+< STATICKEY > (IntegerDeclare() | FractionDeclare() | LettersDeclare())
+
+}
+
+
+void IntegerDeclare(): { }  
+{
+<INTEGERKEY> <IDENTIFIER> <ASSIGN> <INTEGER>{System.out.println("There is Integer decleration"); }}
+
+
+
+void FractionDeclare(): { }{
+<FRACTIONKEY> <IDENTIFIER> <ASSIGN> <FRACTIONS>
+{
+System.out.println("There is Fraction decleration");}}
+
+
+
+void LettersDeclare(): { }
+{
+<LETTERSKEY> <IDENTIFIER> <ASSIGN> <LETTERS>{ System.out.println("There is Letters decleration");}}
+
+
+void RelationalSTMT(): { }
+{
+(RelationalOp()) ((<IDENTIFIER>) | Digit())
+{System.out.println("There is a Relational Statement");}}
+
+
+void ArithmeticSTMT(): { }
+{(ArithmeticOp()) ((<IDENTIFIER>) | Digit()){
+System.out.println("There is an Arithmatic Statement");}}
+
+
+void LogicalSTMT(): { }{
+(LogicalOp()) ((<IDENTIFIER>) | Digit()){System.out.println("There is a Logical Statement");}}
+
+
+void UNARYSTMT(): { }{(UnaryOp())(< IDENTIFIER >){
+System.out.println("There is a Unary Statement");}}
+
+
+void PRINTSTMT(): { }{
+< PRINT> <F_parentheses> (Digit() | < LETTERS> | PuncMarks()) <L_parentheses>
+{System.out.println("There is a Print Statement");}}
+
+
+void UnaryOp(): { } {< INCREMENT > | < DECREMENT >}
+
+void Digit(): { } {< FRACTIONS > | < INTEGER >}
+
+void PuncMarks(): { }
+{
+< DOT >
+| < F_parentheses >
+| < L_parentheses >
+| < COMMA >
+| < OTHERPUNCUATION >
+}
+
+void ArithmeticOp(): { }
+{< PLUS>
+| < MINUS>
+| < MULTIPLY>
+| < DIVIDE>
+| < REMINDER>
+}
+
+void LogicalOp(): { } {
+< AND >
+| < OR >
+| < NEGATE>
+}
+
+void RelationalOp(): { }
+{
+< ISEQUAL>
+| < NOTEQUAL>
+| < GREATERTHAN>
+| < LESSTHAN>
+| < GREATEROREQUAL>
+| < LESSOREQUAL> }
